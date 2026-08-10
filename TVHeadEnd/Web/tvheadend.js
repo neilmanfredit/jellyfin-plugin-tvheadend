@@ -1,5 +1,5 @@
 const TVHclientConfigurationPageVar = {
-    pluginUniqueId: '3fd018e5-5e78-4e58-b280-a0c068febee0'
+    pluginUniqueId: '541072f6-f018-4c48-bcbc-ef80734c0df7'
 };
 
 export default function (view, params) {

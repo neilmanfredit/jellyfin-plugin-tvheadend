@@ -9,6 +9,14 @@
     "imageUrl": "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png",
     "versions": [
       {
+        "version": "2.4.1.0",
+        "changelog": "- Fixed the actual root cause of every \"settings won't save\" report: tvheadend.js hardcoded the plugin's pre-rename GUID (3fd018e5-5e78-4e58-b280-a0c068febee0) to look up its own configuration, left over from before the TvheadEndNew rename to a new GUID (541072f6-f018-4c48-bcbc-ef80734c0df7). Every load/save request was hitting a plugin id that no longer exists, returning HTTP 404.",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.4.1.0/TvheadEndNew_2.4.1.0.zip",
+        "checksum": "21be253b76fafad7a4690d96a913bf0d",
+        "timestamp": "2026-08-10T18:13:55Z"
+      },
+      {
         "version": "2.4.0.0",
         "changelog": "- Split the plugin settings page into two: \"TVHeadend Configuration\" (settings only) and \"TVHeadend Status\" (runtime status, active tuners, and the Channels admin actions). The status page's 5-second polling no longer shares a page/DOM with the settings form. Also improved save/load error messages (HTTP status instead of a generic \"unknown error\") to help diagnose any future failures.",
         "targetAbi": "12.0.0.0",
