@@ -243,6 +243,7 @@ namespace TVHeadEnd
     public sealed class ChannelRebuildResult
     {
         public int ChannelCount { get; set; }
+        public int RemovedChannelCount { get; set; }
         public string QueuedJellyfinTask { get; set; }
     }
 
@@ -281,11 +282,13 @@ namespace TVHeadEnd
         }
 
         /// <summary>
-        /// Forces a fresh HTSP connection so TVHeadend resends its full channel list, then
-        /// re-derives Jellyfin's channel data from it and best-effort queues Jellyfin's own
-        /// Live TV guide/channel scheduled task (if one can be unambiguously identified) so
-        /// new/removed channels are reflected in Jellyfin's Live TV section without waiting
-        /// for its normal schedule.
+        /// Forces a fresh HTSP connection so TVHeadend resends its full channel list,
+        /// re-derives Jellyfin's channel data from it, removes this service's stored
+        /// LiveTvChannel items that are no longer in that list, and best-effort queues
+        /// Jellyfin's own Live TV guide/channel scheduled task (if one can be unambiguously
+        /// identified) so newly added channels are picked up without waiting for its normal
+        /// schedule. Channel removal is handled here directly rather than relying on that
+        /// task, since Jellyfin's own sync does not reliably remove stale channels on its own.
         /// </summary>
         [HttpPost("Rebuild")]
         public async Task<ActionResult<ChannelRebuildResult>> Rebuild(CancellationToken cancellationToken)
@@ -302,10 +305,12 @@ namespace TVHeadEnd
                 }
 
                 var channels = (await _liveTvService.GetChannelsAsync(timeout.Token).ConfigureAwait(false)).ToList();
+                var removedChannelCount = _liveTvService.RemoveStaleChannels(channels.Select(channel => channel.Id));
 
                 return Ok(new ChannelRebuildResult
                 {
                     ChannelCount = channels.Count,
+                    RemovedChannelCount = removedChannelCount,
                     QueuedJellyfinTask = TryQueueGuideRefreshTask()
                 });
             }

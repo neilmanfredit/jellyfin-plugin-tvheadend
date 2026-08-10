@@ -9,6 +9,14 @@
     "imageUrl": "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png",
     "versions": [
       {
+        "version": "2.2.0.0",
+        "changelog": "- \"Rebuild channels\" now explicitly removes this service's stored LiveTvChannel items that are no longer present on TVHeadend, instead of relying only on Jellyfin's own channel/guide task (which does not reliably remove stale channels on its own). New channels are still picked up via that best-effort task trigger.",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.2.0.0/TvheadEndNew_2.2.0.0.zip",
+        "checksum": "6f969264ee6863049b434163fd619ced",
+        "timestamp": "2026-08-10T17:20:24Z"
+      },
+      {
         "version": "2.1.1.0",
         "changelog": "- Fixed the \"Channels\" section's two new buttons breaking the settings page: their click handlers ran unguarded before the form's save handler was registered, so if either button element wasn't found the resulting error stopped the save handler from ever being attached (settings silently failed to save). Also bounded the \"Rebuild channels\" and \"Clear channel logo cache\" requests to 45 seconds instead of inheriting a 15-minute background-sync timeout, so a slow or unreachable TVHeadend server can no longer leave the page stuck on a loading spinner.",
         "targetAbi": "12.0.0.0",

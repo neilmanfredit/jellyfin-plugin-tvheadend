@@ -486,9 +486,12 @@ export default function (view, params) {
                 if (!result) return;
                 const resultEl = view.querySelector('#channelActionResult');
                 if (!resultEl) return;
-                resultEl.textContent = result.QueuedJellyfinTask
+                const removedText = result.RemovedChannelCount > 0
+                    ? ` Removed ${result.RemovedChannelCount} channel(s) no longer on TVHeadend.`
+                    : '';
+                resultEl.textContent = (result.QueuedJellyfinTask
                     ? `Rebuilt ${result.ChannelCount} channel(s) from TVHeadend and queued Jellyfin's "${result.QueuedJellyfinTask}" task.`
-                    : `Rebuilt ${result.ChannelCount} channel(s) from TVHeadend. If channels were added or removed, also run Jellyfin's own Live TV guide/channel refresh under Dashboard → Scheduled Tasks to sync them.`;
+                    : `Rebuilt ${result.ChannelCount} channel(s) from TVHeadend. If new channels were added, also run Jellyfin's own Live TV guide/channel refresh under Dashboard → Scheduled Tasks to sync them.`) + removedText;
             }).catch(() => {});
         });
     }

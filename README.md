@@ -30,9 +30,10 @@ official upstream TVHeadend plugin without conflict.
   state, and per-stream packet/event counters.
 - A "Channels" section in the plugin settings page with two admin actions:
   "Rebuild channels" (reconnects to TVHeadend so it resends its full channel
-  list, then best-effort queues Jellyfin's own Live TV guide/channel refresh
-  task) and "Clear channel logo cache" (force re-downloads all cached channel
-  logos, ignoring retention/fingerprint checks).
+  list, removes channels no longer present on TVHeadend, and best-effort
+  queues Jellyfin's own Live TV guide/channel refresh task so newly added
+  channels are picked up) and "Clear channel logo cache" (force re-downloads
+  all cached channel logos, ignoring retention/fingerprint checks).
 - Jellyfin 10.11 / .NET 9 packaging metadata, plus a Jellyfin 12.0 / .NET 10
   build for newer servers.
 

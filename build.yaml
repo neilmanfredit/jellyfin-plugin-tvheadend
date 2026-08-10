@@ -1,7 +1,7 @@
 name: "TvheadEndNew"
 guid: "541072f6-f018-4c48-bcbc-ef80734c0df7"
 imageUrl: "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png"
-version: 4
+version: 5
 targetAbi: "12.0.0.0"
 framework: "net10.0"
 owner: "neilmanfredit"
@@ -11,6 +11,11 @@ category: "LiveTV"
 artifacts:
   - "TVHeadEnd.dll"
 changelog: |-
+  - "Rebuild channels" now explicitly removes this service's stored
+    LiveTvChannel items that are no longer present on TVHeadend, instead
+    of relying only on Jellyfin's own channel/guide task (which does not
+    reliably remove stale channels on its own). New channels are still
+    picked up via that best-effort task trigger.
   - Fixed the "Channels" section's two new buttons breaking the settings
     page: their click handlers ran unguarded before the form's save
     handler was registered, so if either button element wasn't found the

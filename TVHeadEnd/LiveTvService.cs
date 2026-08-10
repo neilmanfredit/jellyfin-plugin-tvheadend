@@ -361,6 +361,36 @@ namespace TVHeadEnd
             }
         }
 
+        /// <summary>
+        /// Deletes this service's stored LiveTvChannel items whose ExternalId is no longer
+        /// present in <paramref name="currentChannelIds"/>. Jellyfin's own Live TV channel
+        /// sync adds new channels, but does not necessarily remove stale ones on its own, so
+        /// this is done explicitly here (used by the plugin's "Rebuild channels" admin action).
+        /// </summary>
+        public int RemoveStaleChannels(IEnumerable<string> currentChannelIds)
+        {
+            var currentIds = new HashSet<string>(currentChannelIds, StringComparer.Ordinal);
+            var items = _libraryManager.GetItemList(new InternalItemsQuery
+            {
+                IncludeItemTypes = [BaseItemKind.LiveTvChannel]
+            });
+
+            var removed = 0;
+            foreach (var item in items.OfType<LiveTvChannel>()
+                         .Where(item => string.Equals(item.ServiceName, Name, StringComparison.Ordinal)))
+            {
+                if (currentIds.Contains(item.ExternalId))
+                {
+                    continue;
+                }
+
+                _libraryManager.DeleteItem(item, new DeleteOptions { DeleteFileLocation = false });
+                removed++;
+            }
+
+            return removed;
+        }
+
         private static bool StoredImageNeedsRefresh(ItemImageInfo image, string imagePath)
         {
             var isRemote = Uri.TryCreate(imagePath, UriKind.Absolute, out var uri)

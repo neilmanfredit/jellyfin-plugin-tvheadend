@@ -318,7 +318,7 @@
                 <details class="tvhSection">
                     <summary>Channels</summary>
                     <div class="tvhSectionBody">
-                        <div class="fieldDescription">"Rebuild channels" reconnects to TVHeadend so it resends its full channel list, then best-effort triggers Jellyfin's own Live TV channel/guide refresh so new or removed channels show up here without waiting for its normal schedule. This briefly interrupts active streams. "Clear channel logo cache" only force-refreshes channel logos.</div>
+                        <div class="fieldDescription">"Rebuild channels" reconnects to TVHeadend so it resends its full channel list, removes any channels no longer on TVHeadend, and best-effort triggers Jellyfin's own Live TV channel/guide refresh so newly added channels show up here without waiting for its normal schedule. This briefly interrupts active streams. "Clear channel logo cache" only force-refreshes channel logos.</div>
                         <div class="tvhInlineButtons">
                             <button is="emby-button" type="button" id="btnRebuildChannels" class="raised" title="Reconnect to TVHeadend and re-pull the channel list into Jellyfin. Briefly interrupts active streams."><span>Rebuild channels</span></button>
                             <button is="emby-button" type="button" id="btnClearChannelImageCache" class="raised" title="Delete all cached channel logos and re-download them from TVHeadend."><span>Clear channel logo cache</span></button>
