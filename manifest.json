@@ -1,0 +1,21 @@
+[
+  {
+    "guid": "541072f6-f018-4c48-bcbc-ef80734c0df7",
+    "name": "TvheadEndNew",
+    "description": "Manage TVHeadend from Jellyfin",
+    "overview": "Manage TVHeadend from Jellyfin",
+    "owner": "neilmanfredit",
+    "category": "Live TV",
+    "imageUrl": "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png",
+    "versions": [
+      {
+        "version": "1.0.0.0",
+        "changelog": "- Forked and renamed to TvheadEndNew with a distinct plugin GUID so it can be installed alongside the official upstream TVHeadend plugin.\n- Jellyfin 10.11 support (#100) @crobibero\n- Restore subtitles and multiple audio that got destroyed in commit db8cd9af238813a7b141ba826168fdaa22f1509e on Feb 18, 2018 (#68) @roman-vanicek\n- Further Release 10.9.x improvements (#92) @lomion0815\n- Readme: update build requirements (#93) @citronalco\n- Fixed link to TVHeadend image (#83) @lomion0815\n- Set correct dates for recordings (#84) @lomion0815\n- Changed HTSP field \"summary\" to correct name \"subtitle\". (#85) @lomion0815",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v1.0.0.0/TvheadEndNew_1.0.0.0.zip",
+        "checksum": "c5c0f7de56060bb09f6a0e47b3911cdf",
+        "timestamp": "2026-08-10T16:07:00Z"
+      }
+    ]
+  }
+]
