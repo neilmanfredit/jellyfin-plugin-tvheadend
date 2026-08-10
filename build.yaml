@@ -1,16 +1,18 @@
-name: "TVHeadend"
-guid: "3fd018e5-5e78-4e58-b280-a0c068febee0"
+name: "TvheadEndNew"
+guid: "541072f6-f018-4c48-bcbc-ef80734c0df7"
 imageUrl: "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png"
-version: 13
+version: 1
 targetAbi: "10.11.0.0"
 framework: "net9.0"
-owner: "jellyfin"
+owner: "neilmanfredit"
 overview: "Manage TVHeadend from Jellyfin"
 description: "Manage TVHeadend from Jellyfin"
 category: "LiveTV"
 artifacts:
   - "TVHeadEnd.dll"
 changelog: |-
+  - Forked and renamed to TvheadEndNew with a distinct plugin GUID so it can be
+    installed alongside the official upstream TVHeadend plugin.
   - Jellyfin 10.11 support (#100) @crobibero
   - Restore subtitles and multiple audio that got destroyed in commit db8cd9af238813a7b141ba826168fdaa22f1509e on Feb 18, 2018 (#68) @roman-vanicek
   - Further Release 10.9.x improvements (#92) @lomion0815

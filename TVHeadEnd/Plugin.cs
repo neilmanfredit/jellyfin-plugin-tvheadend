@@ -72,7 +72,7 @@ namespace TVHeadEnd
         /// <value>The name.</value>
         public override string Name
         {
-            get { return "TVHeadend"; }
+            get { return "TvheadEndNew"; }
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace TVHeadEnd
             }
         }
 
-        private Guid _id = new Guid("3fd018e5-5e78-4e58-b280-a0c068febee0");
+        private Guid _id = new Guid("541072f6-f018-4c48-bcbc-ef80734c0df7");
         public override Guid Id
         {
             get { return _id; }
