@@ -1,12 +1,13 @@
-# Jellyfin TVHeadend Plugin Fork
+# TvheadEndNew (Jellyfin TVHeadend Plugin Fork)
 
 This repository is a fork of the official
 [jellyfin/jellyfin-plugin-tvheadend](https://github.com/jellyfin/jellyfin-plugin-tvheadend)
-plugin. It keeps the original TVHeadend plugin identity and adds local work aimed
-at newer Jellyfin builds, more reliable HTSP playback, and better diagnostics.
+plugin, packaged under its own plugin identity as **TvheadEndNew** (distinct
+name and GUID from upstream). It adds local work aimed at newer Jellyfin
+builds, more reliable HTSP playback, and better diagnostics.
 
-Do not install this side-by-side with the upstream plugin. It is the same
-Jellyfin plugin, with fork-specific changes.
+Because it uses its own GUID, TvheadEndNew can be installed alongside the
+official upstream TVHeadend plugin without conflict.
 
 ## What It Includes
 
@@ -37,12 +38,24 @@ Jellyfin plugin, with fork-specific changes.
 
 ## Installation
 
-Use the normal Jellyfin plugin installation flow when installing a packaged
-release:
+### Via plugin repository (recommended)
 
-[Jellyfin plugin installation documentation](https://jellyfin.org/docs/general/server/plugins/index.html#installing)
+1. In Jellyfin, go to **Dashboard → Plugins → Repositories → Add Repository**.
+2. Add this repository URL:
 
-For a manual local build:
+   ```text
+   https://raw.githubusercontent.com/neilmanfredit/jellyfin-plugin-tvheadend/master/manifest.json
+   ```
+
+3. Go to the **Catalog** tab, find **TvheadEndNew** under the Live TV
+   category, install it, and restart Jellyfin.
+
+Requires a Jellyfin server version that is compatible with the plugin's
+`targetAbi` (currently `10.11.0.0`) — the plugin will not appear in the
+catalog on servers older than that. Packaged releases are published under
+[Releases](https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases).
+
+### Manual build
 
 ```powershell
 dotnet publish --configuration Release --output bin

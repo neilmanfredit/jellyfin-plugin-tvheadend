@@ -5,7 +5,7 @@
     "description": "Manage TVHeadend from Jellyfin",
     "overview": "Manage TVHeadend from Jellyfin",
     "owner": "neilmanfredit",
-    "category": "Live TV",
+    "category": "LiveTV",
     "imageUrl": "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png",
     "versions": [
       {
