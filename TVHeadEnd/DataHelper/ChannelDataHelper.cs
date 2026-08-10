@@ -64,10 +64,9 @@ namespace TVHeadEnd.DataHelper
                     }
                     else
                     {
-                        if (message.containsField("channelNumber") && message.getInt("channelNumber") > 0) // use only channels with number > 0
-                        {
-                            _data.Add(channelID, message);
-                        }
+                        // Channels without an assigned LCN (channelNumber 0/absent) are still
+                        // valid, playable TVHeadend channels - don't silently drop them.
+                        _data.Add(channelID, message);
                     }
                 }
                 catch (Exception ex)
@@ -159,6 +158,7 @@ namespace TVHeadEnd.DataHelper
                             }
 
                             Boolean serviceFound = false;
+                            string detectedType = null;
                             if (m.containsField("services"))
                             {
                                 IList tunerInfoList = m.getList("services");
@@ -171,46 +171,50 @@ namespace TVHeadEnd.DataHelper
                                     }
                                     if (firstServiceInList.containsField("type"))
                                     {
-                                        string type = firstServiceInList.getString("type").ToLower();
-                                        switch (type)
-                                        {
-                                            case "radio":
-                                                ci.ChannelType = ChannelType.Radio;
-                                                serviceFound = true;
-                                                break;
-                                            case "sdtv":
-                                            case "hdtv":
-                                            case "fhdtv":
-                                            case "uhdtv":
-                                                ci.ChannelType = ChannelType.TV;
-                                                ci.IsHD = type != "sdtv";
-                                                serviceFound = true;
-                                                break;
-                                            case "other":
-                                                switch (_channelType4Other.ToLower())
-                                                {
-                                                    case "tv":
-                                                        _logger.LogDebug("[TVHclient] ChannelDataHelper: map service tag 'Other' to 'TV'");
-                                                        ci.ChannelType = ChannelType.TV;
-                                                        serviceFound = true;
-                                                        break;
-                                                    case "radio":
-                                                        _logger.LogDebug("[TVHclient] ChannelDataHelper: map service tag 'Other' to 'Radio'");
-                                                        ci.ChannelType = ChannelType.Radio;
-                                                        serviceFound = true;
-                                                        break;
-                                                    default:
-                                                        _logger.LogDebug("[TVHclient] ChannelDataHelper: don't map service tag 'Other' - will be ignored");
-                                                        break;
-                                                }
-                                                break;
-                                            default:
-                                                _logger.LogDebug("[TVHclient] ChannelDataHelper: unkown service tag '{tag}' - will be ignored.", type);
-                                                break;
-                                        }
+                                        detectedType = firstServiceInList.getString("type").ToLower();
                                     }
                                 }
                             }
+
+                            switch (detectedType)
+                            {
+                                case "radio":
+                                    ci.ChannelType = ChannelType.Radio;
+                                    serviceFound = true;
+                                    break;
+                                case "sdtv":
+                                case "hdtv":
+                                case "fhdtv":
+                                case "uhdtv":
+                                    ci.ChannelType = ChannelType.TV;
+                                    ci.IsHD = detectedType != "sdtv";
+                                    serviceFound = true;
+                                    break;
+                                default:
+                                    // Tagged "other", an unrecognized tag, or no service/type info
+                                    // at all (e.g. no active service) - apply the admin's "Channels
+                                    // tagged Other" preference instead of silently dropping the
+                                    // channel outright.
+                                    switch ((_channelType4Other ?? "Ignore").ToLower())
+                                    {
+                                        case "tv":
+                                            _logger.LogDebug("[TVHclient] ChannelDataHelper: map unclassified channel to 'TV'. Detected tag: '{tag}'", detectedType ?? "none");
+                                            ci.ChannelType = ChannelType.TV;
+                                            serviceFound = true;
+                                            break;
+                                        case "radio":
+                                            _logger.LogDebug("[TVHclient] ChannelDataHelper: map unclassified channel to 'Radio'. Detected tag: '{tag}'", detectedType ?? "none");
+                                            ci.ChannelType = ChannelType.Radio;
+                                            serviceFound = true;
+                                            break;
+                                        default:
+                                            _logger.LogDebug("[TVHclient] ChannelDataHelper: unclassified channel will be ignored. Detected tag: '{tag}'", detectedType ?? "none");
+                                            break;
+                                    }
+
+                                    break;
+                            }
+
                             if (!serviceFound)
                             {
                                 _logger.LogDebug("[TVHclient] ChannelDataHelper: unable to detect service-type (tvheadend tag) from service list. HTSMessage: {m}", m.ToString());

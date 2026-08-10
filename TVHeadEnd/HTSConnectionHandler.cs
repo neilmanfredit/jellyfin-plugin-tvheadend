@@ -82,8 +82,6 @@ namespace TVHeadEnd
             _channelDataHelper = new ChannelDataHelper(loggerFactory.CreateLogger<ChannelDataHelper>());
             _dvrDataHelper = new DvrDataHelper(loggerFactory.CreateLogger<DvrDataHelper>());
             _autorecDataHelper = new AutorecDataHelper(loggerFactory.CreateLogger<AutorecDataHelper>());
-
-            _channelDataHelper.SetChannelType4Other(_channelType);
         }
 
         private static TaskCompletionSource<bool> CreateInitialLoadCompletion()
@@ -146,6 +144,7 @@ namespace TVHeadEnd
             _priority = config.Priority;
             _profile = config.Profile.Trim();
             _channelType = config.ChannelType.Trim();
+            _channelDataHelper.SetChannelType4Other(_channelType);
             _streamingMethod = StreamingMethods.GetEffective(config.StreamingMethod);
             _forceDeinterlace = config.ForceDeinterlace;
             _tvhTimeZone = null;

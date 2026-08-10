@@ -101,6 +101,11 @@ reliability options.
 HTSP is the default streaming method in this fork. HTTP ticket/basic streaming is
 still available when you want TVHeadend to provide the transport stream directly.
 
+TVHeadend channels are only imported once their service type maps to TV or
+Radio. Channels tagged "other" (or with no active service at all) are
+controlled by the "Channels tagged Other" setting - set it to TV or Radio to
+include them, or leave it as "Ignore" to exclude them.
+
 ## Building and Releasing
 
 ### Installing the .NET SDK

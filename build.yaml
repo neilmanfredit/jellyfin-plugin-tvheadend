@@ -1,7 +1,7 @@
 name: "TvheadEndNew"
 guid: "541072f6-f018-4c48-bcbc-ef80734c0df7"
 imageUrl: "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png"
-version: 5
+version: 6
 targetAbi: "12.0.0.0"
 framework: "net10.0"
 owner: "neilmanfredit"
@@ -11,6 +11,20 @@ category: "LiveTV"
 artifacts:
   - "TVHeadEnd.dll"
 changelog: |-
+  - Fixed a bug where many TVHeadend channels were silently dropped and
+    never reached Jellyfin: the "Channels tagged Other" setting was wired
+    to HTSConnectionHandler before plugin configuration was loaded, so it
+    was always null - any channel whose primary service was tagged
+    "other" threw and got silently skipped. Channels without an assigned
+    LCN (channel number 0/unset) were also unconditionally dropped even
+    though they're valid TVHeadend channels. Channels with no active
+    service (or an unrecognized tag) now also fall through to the
+    "Channels tagged Other" setting instead of being dropped outright.
+  - Fixed the settings page occasionally failing to save with no
+    feedback and getting stuck on a loading spinner: the configuration
+    load and save requests had no error handling at all, so any failed
+    request (network hiccup, server error) left Dashboard's loading
+    spinner showing forever with no indication anything went wrong.
   - "Rebuild channels" now explicitly removes this service's stored
     LiveTvChannel items that are no longer present on TVHeadend, instead
     of relying only on Jellyfin's own channel/guide task (which does not

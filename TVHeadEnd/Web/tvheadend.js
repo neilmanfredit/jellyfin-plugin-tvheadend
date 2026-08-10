@@ -406,9 +406,12 @@ export default function (view, params) {
         const page = this;
         ApiClient.getPluginConfiguration(TVHclientConfigurationPageVar.pluginUniqueId).then(config => {
             loadConfig(page, config);
-            Dashboard.hideLoadingMsg();
             startStatusPolling(page);
-        });
+        }).catch(error => {
+            console.error('[TVHclient] Failed to load TVHeadend plugin configuration', error);
+            const announcer = page.querySelector('#statusAnnouncer');
+            if (announcer) announcer.textContent = 'Unable to load TVHeadend plugin configuration.';
+        }).finally(() => Dashboard.hideLoadingMsg());
     });
 
     view.addEventListener('viewhide', stopStatusPolling);
@@ -470,7 +473,10 @@ export default function (view, params) {
             Dashboard.processPluginConfigurationUpdateResult(result);
             loadStatus(view, false);
             loadProfiles(view, form.querySelector('#txtProfile').value.trim());
-        });
+        }).catch(error => {
+            console.error('[TVHclient] Failed to save TVHeadend plugin configuration', error);
+            window.alert('Failed to save TVHeadend plugin settings: ' + (error && error.message ? error.message : 'unknown error'));
+        }).finally(() => Dashboard.hideLoadingMsg());
         return false;
     });
 
