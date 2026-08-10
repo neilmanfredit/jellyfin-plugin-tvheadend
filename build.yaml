@@ -1,9 +1,9 @@
 name: "TvheadEndNew"
 guid: "541072f6-f018-4c48-bcbc-ef80734c0df7"
 imageUrl: "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png"
-version: 1
-targetAbi: "10.11.0.0"
-framework: "net9.0"
+version: 2
+targetAbi: "12.0.0.0"
+framework: "net10.0"
 owner: "neilmanfredit"
 overview: "Manage TVHeadend from Jellyfin"
 description: "Manage TVHeadend from Jellyfin"
@@ -11,6 +11,9 @@ category: "LiveTV"
 artifacts:
   - "TVHeadEnd.dll"
 changelog: |-
+  - Ported to the Jellyfin 12.0 plugin ABI (net10.0, Jellyfin.Controller
+    12.0.0-rc4). No source changes were required beyond retargeting, since
+    the underlying MediaBrowser.* assemblies stayed source-compatible.
   - Forked and renamed to TvheadEndNew with a distinct plugin GUID so it can be
     installed alongside the official upstream TVHeadend plugin.
   - Jellyfin 10.11 support (#100) @crobibero

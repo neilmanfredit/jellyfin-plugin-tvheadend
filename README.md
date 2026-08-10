@@ -28,13 +28,18 @@ official upstream TVHeadend plugin without conflict.
 - Runtime status in the plugin settings page: connection state, active tuners,
   reader counts, signal metrics, queue health, drops, reconnects, startup cache
   state, and per-stream packet/event counters.
-- Jellyfin 10.11 / .NET 9 packaging metadata.
+- Jellyfin 10.11 / .NET 9 packaging metadata, plus a Jellyfin 12.0 / .NET 10
+  build for newer servers.
 
 ## Requirements
 
-- Jellyfin server compatible with plugin ABI `10.11.0.0`.
+- Jellyfin server compatible with plugin ABI `12.0.0.0` (current `master`,
+  built against `net10.0`), or `10.11.0.0` for the earlier `v1.0.0.0` release
+  (built against `net9.0`). The repository manifest publishes both, and
+  Jellyfin's catalogue picks whichever matches your server.
 - TVHeadend with HTTP and HTSP access enabled.
-- .NET 9 SDK to build from source.
+- .NET 10 SDK to build `master` from source (.NET 9 SDK for the `10.11.0.0`
+  release line).
 
 ## Installation
 
@@ -53,9 +58,11 @@ official upstream TVHeadend plugin without conflict.
 6. Return to **Dashboard → Plugins → Catalogue** and search for
    **TvheadEndNew** (Live TV category), install it, and restart Jellyfin.
 
-Requires a Jellyfin server version that is compatible with the plugin's
-`targetAbi` (currently `10.11.0.0`) — the plugin will not appear in the
-catalogue on servers older than that. Packaged releases are published under
+Jellyfin filters the catalogue by ABI compatibility. The manifest currently
+publishes two versions: `2.0.0.0` (`targetAbi 12.0.0.0`, for Jellyfin 12.x
+servers) and `1.0.0.0` (`targetAbi 10.11.0.0`, for Jellyfin 10.11.x servers)
+— your server will only see the one it's compatible with. Packaged releases
+are published under
 [Releases](https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases).
 
 ### Manual build
@@ -78,7 +85,8 @@ still available when you want TVHeadend to provide the transport stream directly
 
 ## Building and Releasing
 
-The project targets `net9.0` and can be built with:
+The project targets `net10.0` (Jellyfin 12.0 ABI) on `master`, and can be
+built with:
 
 ```powershell
 dotnet build
