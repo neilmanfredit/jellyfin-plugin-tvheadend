@@ -40,19 +40,22 @@ official upstream TVHeadend plugin without conflict.
 
 ### Via plugin repository (recommended)
 
-1. In Jellyfin, go to **Dashboard → Plugins → Repositories → Add Repository**.
-2. Add this repository URL:
+1. In Jellyfin, go to **Dashboard → Plugins → Catalogue**.
+2. Click **Manage Repositories**.
+3. Click the **+** button to add a new repository.
+4. Enter a name (e.g. `TvheadEndNew`) and this URL:
 
    ```text
-   https://raw.githubusercontent.com/neilmanfredit/jellyfin-plugin-tvheadend/master/manifest.json
+   https://neilmanfredit.github.io/jellyfin-plugin-tvheadend/manifest.json
    ```
 
-3. Go to the **Catalog** tab, find **TvheadEndNew** under the Live TV
-   category, install it, and restart Jellyfin.
+5. Click **Save**.
+6. Return to **Dashboard → Plugins → Catalogue** and search for
+   **TvheadEndNew** (Live TV category), install it, and restart Jellyfin.
 
 Requires a Jellyfin server version that is compatible with the plugin's
 `targetAbi` (currently `10.11.0.0`) — the plugin will not appear in the
-catalog on servers older than that. Packaged releases are published under
+catalogue on servers older than that. Packaged releases are published under
 [Releases](https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases).
 
 ### Manual build
@@ -84,6 +87,16 @@ dotnet build
 Packaged releases can be produced with
 [Jellyfin Plugin Repository Manager](https://github.com/oddstr13/jellyfin-plugin-repository-manager)
 using the included `build.yaml`.
+
+Releases are also published manually:
+
+1. `dotnet publish TVHeadEnd/TVHeadEnd.csproj --configuration Release --output bin`
+2. Zip `TVHeadEnd.dll` from that output (e.g. `TvheadEndNew_<version>.zip`).
+3. Create a GitHub release with the zip attached as a release asset, tagged
+   `v<version>`.
+4. Update `docs/manifest.json` with the new version's `sourceUrl` (the
+   release asset URL), MD5 `checksum`, and `timestamp`, then push to `master`
+   — GitHub Pages serves it from `/docs` automatically.
 
 ## Upstream
 
