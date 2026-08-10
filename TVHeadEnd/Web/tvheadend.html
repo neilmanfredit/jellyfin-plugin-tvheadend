@@ -86,7 +86,7 @@
         <div class="content-primary">
             <div class="tvhPageHeader">
                 <h2>TVHeadend Configuration</h2>
-                <div class="tvhMuted">Connection, HTSP reliability, and signal recovery settings. Live status, active tuners, and channel maintenance moved to the TVHeadend Status page.</div>
+                <div class="tvhMuted">Connection, HTSP reliability, signal recovery, and channel maintenance. Live status and active tuners moved to the TVHeadend Status page.</div>
             </div>
 
             <form class="TVHclientConfigurationForm">
@@ -153,6 +153,18 @@
                         <div class="selectContainer"><select is="emby-select" id="selChannelType" label="Channels tagged Other"><option>TV</option><option>Radio</option><option>Ignore</option></select></div>
                         <div class="checkboxContainer"><label><input is="emby-checkbox" type="checkbox" id="chkHideRecordingsChannel" /><span>Hide TVHeadend Recordings channel</span></label></div>
                         <div class="checkboxContainer checkboxContainer-withDescription tvhExperimental"><label><input is="emby-checkbox" type="checkbox" id="chkForceDeinterlace" /><span>Force deinterlacing for all channels and recordings</span></label><div class="fieldDescription checkboxFieldDescription">Experimental. Requires a Jellyfin server restart.</div></div>
+                    </div>
+                </details>
+
+                <details class="tvhSection">
+                    <summary>Channels</summary>
+                    <div class="tvhSectionBody">
+                        <div class="fieldDescription">"Rebuild channels" reconnects to TVHeadend so it resends its full channel list, removes any channels no longer on TVHeadend, and best-effort triggers Jellyfin's own Live TV channel/guide refresh so newly added channels show up without waiting for its normal schedule. This briefly interrupts active streams. "Clear channel logo cache" only force-refreshes channel logos.</div>
+                        <div class="tvhInlineButtons">
+                            <button is="emby-button" type="button" id="btnRebuildChannels" class="raised" title="Reconnect to TVHeadend and re-pull the channel list into Jellyfin. Briefly interrupts active streams."><span>Rebuild channels</span></button>
+                            <button is="emby-button" type="button" id="btnClearChannelImageCache" class="raised" title="Delete all cached channel logos and re-download them from TVHeadend."><span>Clear channel logo cache</span></button>
+                        </div>
+                        <div id="channelActionResult" class="tvhMuted" role="status" aria-live="polite"></div>
                     </div>
                 </details>
 

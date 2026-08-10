@@ -24,36 +24,19 @@
         #TVHclientStatusPage .tvhPageHeader { margin-bottom: 1.4em; }
         #TVHclientStatusPage .tvhPageHeader h2 { margin-bottom: .25em; }
         #TVHclientStatusPage .tvhMuted { opacity: .72; }
-        #TVHclientStatusPage .tvhSection {
-            margin: 1.25em 0 0;
-            border: 1px solid var(--tvh-border);
-            border-radius: var(--tvh-radius);
-            background: var(--tvh-surface);
-            overflow: clip;
-        }
-        #TVHclientStatusPage .tvhSection > summary,
         #TVHclientStatusPage .tvhRunningChannel details > summary {
             cursor: pointer;
             overflow-wrap: anywhere;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
         }
-        #TVHclientStatusPage .tvhSection > summary {
-            padding: 1em 1.1em;
-            font-size: 1.08em;
-            font-weight: 600;
-            background: var(--tvh-surface-strong);
-        }
-        #TVHclientStatusPage .tvhSection > summary:hover,
         #TVHclientStatusPage .tvhRunningChannel details > summary:hover { filter: brightness(1.08); }
-        #TVHclientStatusPage .tvhSection > summary:focus-visible,
         #TVHclientStatusPage .tvhRunningChannel details > summary:focus-visible,
         #TVHclientStatusPage #btnRefreshStatus:focus-visible,
         #TVHclientStatusPage .tvhTableWrap:focus-visible {
             outline: 2px solid var(--tvh-focus);
             outline-offset: 2px;
         }
-        #TVHclientStatusPage .tvhSectionBody { padding: 1em 1.1em 1.1em; }
         #TVHclientStatusPage .tvhStatusHeader {
             display: flex;
             flex-wrap: wrap;
@@ -184,8 +167,6 @@
         }
         #TVHclientStatusPage [aria-busy="true"] { cursor: progress; }
         @media (max-width: 600px) {
-            #TVHclientStatusPage .tvhSectionBody { padding: .82em; }
-            #TVHclientStatusPage .tvhSection > summary { padding: .9em .82em; }
             #TVHclientStatusPage .tvhRunningChannel { padding: .82em; }
             #TVHclientStatusPage .tvhStatusHeader { align-items: stretch; }
             #TVHclientStatusPage .tvhStatusHeader > div:first-child { flex: 1 1 100%; }
@@ -208,7 +189,7 @@
         <div class="content-primary">
             <div class="tvhPageHeader">
                 <h2>TVHeadend Status</h2>
-                <div class="tvhMuted">Live connection state, active tuners, and channel maintenance. Settings live on the TVHeadend Configuration page.</div>
+                <div class="tvhMuted">Live connection state and active tuners. Settings and channel maintenance live on the TVHeadend Configuration page.</div>
             </div>
 
             <div class="tvhStatusHeader">
@@ -217,18 +198,6 @@
             </div>
             <div id="statusSummary" class="tvhStatusSummary" aria-label="Plugin runtime summary"></div>
             <div id="activeTuners" aria-busy="true"><div class="tvhEmpty">Loading active tuners…</div></div>
-
-            <details class="tvhSection" open>
-                <summary>Channels</summary>
-                <div class="tvhSectionBody">
-                    <div class="fieldDescription">"Rebuild channels" reconnects to TVHeadend so it resends its full channel list, removes any channels no longer on TVHeadend, and best-effort triggers Jellyfin's own Live TV channel/guide refresh so newly added channels show up here without waiting for its normal schedule. This briefly interrupts active streams. "Clear channel logo cache" only force-refreshes channel logos.</div>
-                    <div class="tvhInlineButtons">
-                        <button is="emby-button" type="button" id="btnRebuildChannels" class="raised" title="Reconnect to TVHeadend and re-pull the channel list into Jellyfin. Briefly interrupts active streams."><span>Rebuild channels</span></button>
-                        <button is="emby-button" type="button" id="btnClearChannelImageCache" class="raised" title="Delete all cached channel logos and re-download them from TVHeadend."><span>Clear channel logo cache</span></button>
-                    </div>
-                    <div id="channelActionResult" class="tvhMuted" role="status" aria-live="polite"></div>
-                </div>
-            </details>
 
         </div>
     </div>
