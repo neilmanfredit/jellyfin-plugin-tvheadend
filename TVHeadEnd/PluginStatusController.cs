@@ -257,6 +257,12 @@ namespace TVHeadEnd
     [Route("TVHeadEnd/Channels")]
     public sealed class PluginChannelsController : ControllerBase
     {
+        // ensureConnection/WaitForInitialLoadAsync fall back to a 15-minute timeout meant
+        // for background startup sync. A synchronous admin button click needs a much
+        // shorter bound so the browser's loading spinner can't hang for minutes if
+        // TVHeadend is slow or unreachable.
+        private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(45);
+
         private readonly HTSConnectionHandler _connectionHandler;
         private readonly LiveTvService _liveTvService;
         private readonly ITaskManager _taskManager;
@@ -284,19 +290,29 @@ namespace TVHeadEnd
         [HttpPost("Rebuild")]
         public async Task<ActionResult<ChannelRebuildResult>> Rebuild(CancellationToken cancellationToken)
         {
-            var result = await _connectionHandler.RebuildChannelsAsync(cancellationToken).ConfigureAwait(false);
-            if (result == -1)
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeout.CancelAfter(RequestTimeout);
+
+            try
             {
-                return StatusCode(StatusCodes.Status504GatewayTimeout, "Timed out waiting for TVHeadend to resend the channel list.");
+                var result = await _connectionHandler.RebuildChannelsAsync(timeout.Token).ConfigureAwait(false);
+                if (result == -1)
+                {
+                    return StatusCode(StatusCodes.Status504GatewayTimeout, "Timed out waiting for TVHeadend to resend the channel list.");
+                }
+
+                var channels = (await _liveTvService.GetChannelsAsync(timeout.Token).ConfigureAwait(false)).ToList();
+
+                return Ok(new ChannelRebuildResult
+                {
+                    ChannelCount = channels.Count,
+                    QueuedJellyfinTask = TryQueueGuideRefreshTask()
+                });
             }
-
-            var channels = (await _liveTvService.GetChannelsAsync(cancellationToken).ConfigureAwait(false)).ToList();
-
-            return Ok(new ChannelRebuildResult
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
-                ChannelCount = channels.Count,
-                QueuedJellyfinTask = TryQueueGuideRefreshTask()
-            });
+                return StatusCode(StatusCodes.Status504GatewayTimeout, "Timed out communicating with TVHeadend.");
+            }
         }
 
         /// <summary>
@@ -307,14 +323,24 @@ namespace TVHeadEnd
         [HttpPost("ClearImageCache")]
         public async Task<ActionResult<ChannelImageCachePurgeResult>> ClearImageCache(CancellationToken cancellationToken)
         {
-            var purged = await _connectionHandler.PurgeChannelImageCacheAsync(cancellationToken).ConfigureAwait(false);
-            var channels = (await _liveTvService.GetChannelsAsync(cancellationToken).ConfigureAwait(false)).ToList();
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeout.CancelAfter(RequestTimeout);
 
-            return Ok(new ChannelImageCachePurgeResult
+            try
             {
-                ChannelCount = channels.Count,
-                ImagesPurged = purged
-            });
+                var purged = await _connectionHandler.PurgeChannelImageCacheAsync(timeout.Token).ConfigureAwait(false);
+                var channels = (await _liveTvService.GetChannelsAsync(timeout.Token).ConfigureAwait(false)).ToList();
+
+                return Ok(new ChannelImageCachePurgeResult
+                {
+                    ChannelCount = channels.Count,
+                    ImagesPurged = purged
+                });
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                return StatusCode(StatusCodes.Status504GatewayTimeout, "Timed out communicating with TVHeadend.");
+            }
         }
 
         /// <summary>

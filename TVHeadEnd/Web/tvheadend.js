@@ -428,35 +428,6 @@ export default function (view, params) {
         }).finally(() => Dashboard.hideLoadingMsg());
     });
 
-    view.querySelector('#btnRebuildChannels').addEventListener('click', function () {
-        runChannelAction(
-            view,
-            'TVHeadEnd/Channels/Rebuild',
-            'Rebuild channels from TVHeadend? This reconnects to TVHeadend and may briefly interrupt active streams.',
-            'Rebuilding channels…'
-        ).then(result => {
-            if (!result) return;
-            const resultEl = view.querySelector('#channelActionResult');
-            if (!resultEl) return;
-            resultEl.textContent = result.QueuedJellyfinTask
-                ? `Rebuilt ${result.ChannelCount} channel(s) from TVHeadend and queued Jellyfin's "${result.QueuedJellyfinTask}" task.`
-                : `Rebuilt ${result.ChannelCount} channel(s) from TVHeadend. If channels were added or removed, also run Jellyfin's own Live TV guide/channel refresh under Dashboard → Scheduled Tasks to sync them.`;
-        }).catch(() => {});
-    });
-
-    view.querySelector('#btnClearChannelImageCache').addEventListener('click', function () {
-        runChannelAction(
-            view,
-            'TVHeadEnd/Channels/ClearImageCache',
-            'Clear all cached channel logos and re-download them from TVHeadend?',
-            'Clearing channel logo cache…'
-        ).then(result => {
-            if (!result) return;
-            const resultEl = view.querySelector('#channelActionResult');
-            if (resultEl) resultEl.textContent = `Cleared ${result.ImagesPurged} cached logo file(s) for ${result.ChannelCount} channel(s) and re-downloaded them from TVHeadend.`;
-        }).catch(() => {});
-    });
-
     view.querySelector('.TVHclientConfigurationForm').addEventListener('submit', function (e) {
         e.preventDefault();
         Dashboard.showLoadingMsg();
@@ -502,4 +473,39 @@ export default function (view, params) {
         });
         return false;
     });
+
+    const rebuildChannelsButton = view.querySelector('#btnRebuildChannels');
+    if (rebuildChannelsButton) {
+        rebuildChannelsButton.addEventListener('click', function () {
+            runChannelAction(
+                view,
+                'TVHeadEnd/Channels/Rebuild',
+                'Rebuild channels from TVHeadend? This reconnects to TVHeadend and may briefly interrupt active streams.',
+                'Rebuilding channels…'
+            ).then(result => {
+                if (!result) return;
+                const resultEl = view.querySelector('#channelActionResult');
+                if (!resultEl) return;
+                resultEl.textContent = result.QueuedJellyfinTask
+                    ? `Rebuilt ${result.ChannelCount} channel(s) from TVHeadend and queued Jellyfin's "${result.QueuedJellyfinTask}" task.`
+                    : `Rebuilt ${result.ChannelCount} channel(s) from TVHeadend. If channels were added or removed, also run Jellyfin's own Live TV guide/channel refresh under Dashboard → Scheduled Tasks to sync them.`;
+            }).catch(() => {});
+        });
+    }
+
+    const clearChannelImageCacheButton = view.querySelector('#btnClearChannelImageCache');
+    if (clearChannelImageCacheButton) {
+        clearChannelImageCacheButton.addEventListener('click', function () {
+            runChannelAction(
+                view,
+                'TVHeadEnd/Channels/ClearImageCache',
+                'Clear all cached channel logos and re-download them from TVHeadend?',
+                'Clearing channel logo cache…'
+            ).then(result => {
+                if (!result) return;
+                const resultEl = view.querySelector('#channelActionResult');
+                if (resultEl) resultEl.textContent = `Cleared ${result.ImagesPurged} cached logo file(s) for ${result.ChannelCount} channel(s) and re-downloaded them from TVHeadend.`;
+            }).catch(() => {});
+        });
+    }
 }

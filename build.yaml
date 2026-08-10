@@ -1,7 +1,7 @@
 name: "TvheadEndNew"
 guid: "541072f6-f018-4c48-bcbc-ef80734c0df7"
 imageUrl: "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png"
-version: 3
+version: 4
 targetAbi: "12.0.0.0"
 framework: "net10.0"
 owner: "neilmanfredit"
@@ -11,6 +11,15 @@ category: "LiveTV"
 artifacts:
   - "TVHeadEnd.dll"
 changelog: |-
+  - Fixed the "Channels" section's two new buttons breaking the settings
+    page: their click handlers ran unguarded before the form's save
+    handler was registered, so if either button element wasn't found the
+    resulting error stopped the save handler from ever being attached
+    (settings silently failed to save). Also bounded the "Rebuild
+    channels" and "Clear channel logo cache" requests to 45 seconds
+    instead of inheriting a 15-minute background-sync timeout, so a slow
+    or unreachable TVHeadend server can no longer leave the page stuck on
+    a loading spinner.
   - Added a "Channels" section to the plugin settings page with two admin
     actions: "Rebuild channels" (forces a fresh HTSP connection so
     TVHeadend resends its channel list, then best-effort queues Jellyfin's
