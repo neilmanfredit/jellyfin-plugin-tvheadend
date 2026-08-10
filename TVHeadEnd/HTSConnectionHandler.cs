@@ -887,6 +887,90 @@ namespace TVHeadEnd
             return _channelDataHelper.BuildChannelInfos(cancellationToken);
         }
 
+        /// <summary>
+        /// Forces a fresh HTSP connection, which discards the cached channel/DVR/autorec
+        /// data and re-requests it from TVHeadend via the same "enableAsyncMetadata" sync
+        /// that <see cref="ensureConnection"/> performs on a cold connect. Reuses that path
+        /// rather than duplicating it so behavior stays identical to a normal reconnect.
+        /// </summary>
+        public async Task<int> RebuildChannelsAsync(CancellationToken cancellationToken)
+        {
+            ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+            lock (_lock)
+            {
+                _connected = false;
+                _htsConnection?.Dispose();
+                _htsConnection = null;
+            }
+
+            return await WaitForInitialLoadAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Deletes every cached channel logo (and its change-detection sidecar) regardless
+        /// of retention/fingerprint, so the next channel refresh re-downloads them from
+        /// TVHeadend unconditionally. Only touches "channel:" cache entries - program/guide
+        /// image cache (keyed by resolved URL, not channel id) is left alone.
+        /// </summary>
+        public async Task<int> PurgeChannelImageCacheAsync(CancellationToken cancellationToken)
+        {
+            ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+            var channels = await BuildChannelInfos(cancellationToken).ConfigureAwait(false);
+            var cacheDirectory = GetImageCacheDirectory();
+            var purged = 0;
+
+            foreach (var channel in channels)
+            {
+                var cacheKey = "channel:" + channel.Id;
+                var filePrefix = GetImageFilePrefix(cacheKey);
+
+                lock (_channelImageSources)
+                {
+                    _channelImageSources.TryRemove(cacheKey, out _);
+                }
+
+                _channelImageLocks.TryRemove(cacheKey, out _);
+
+                foreach (var operationKey in _imageDownloads.Keys
+                    .Where(key => key.StartsWith(cacheKey + "\0", StringComparison.Ordinal))
+                    .ToArray())
+                {
+                    _imageDownloads.TryRemove(operationKey, out _);
+                }
+
+                if (!Directory.Exists(cacheDirectory))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    foreach (var path in EnumerateCachedImages(cacheDirectory, filePrefix))
+                    {
+                        File.Delete(path);
+                        purged++;
+                    }
+
+                    var sourcePath = Path.Combine(cacheDirectory, filePrefix + ".source");
+                    if (File.Exists(sourcePath))
+                    {
+                        File.Delete(sourcePath);
+                    }
+                }
+                catch (IOException ex)
+                {
+                    _logger.LogWarning(ex, "[TVHclient] Could not purge cached image for channel {ChannelId}", channel.Id);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    _logger.LogWarning(ex, "[TVHclient] Could not purge cached image for channel {ChannelId}", channel.Id);
+                }
+            }
+
+            Interlocked.Increment(ref _imageRefreshGeneration);
+            return purged;
+        }
+
         public long ResolveChannelId(string channelId)
         {
             return _channelDataHelper.ResolveChannelId(channelId);

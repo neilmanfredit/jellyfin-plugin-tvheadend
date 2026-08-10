@@ -315,6 +315,18 @@
                     </div>
                 </details>
 
+                <details class="tvhSection">
+                    <summary>Channels</summary>
+                    <div class="tvhSectionBody">
+                        <div class="fieldDescription">"Rebuild channels" reconnects to TVHeadend so it resends its full channel list, then best-effort triggers Jellyfin's own Live TV channel/guide refresh so new or removed channels show up here without waiting for its normal schedule. This briefly interrupts active streams. "Clear channel logo cache" only force-refreshes channel logos.</div>
+                        <div class="tvhInlineButtons">
+                            <button is="emby-button" type="button" id="btnRebuildChannels" class="raised" title="Reconnect to TVHeadend and re-pull the channel list into Jellyfin. Briefly interrupts active streams."><span>Rebuild channels</span></button>
+                            <button is="emby-button" type="button" id="btnClearChannelImageCache" class="raised" title="Delete all cached channel logos and re-download them from TVHeadend."><span>Clear channel logo cache</span></button>
+                        </div>
+                        <div id="channelActionResult" class="tvhMuted" role="status" aria-live="polite"></div>
+                    </div>
+                </details>
+
                 <div class="tvhInlineButtons">
                     <button is="emby-button" type="submit" class="raised button-submit" title="Save all TVHeadend plugin settings shown on this page."><span>Save settings</span></button>
                     <button is="emby-button" type="button" id="btnResetDefaults" class="raised" title="Reset TVHeadend plugin settings to their default values, keeping hostname, username, and password."><span>Reset to defaults</span></button>

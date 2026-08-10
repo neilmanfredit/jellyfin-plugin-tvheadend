@@ -28,6 +28,11 @@ official upstream TVHeadend plugin without conflict.
 - Runtime status in the plugin settings page: connection state, active tuners,
   reader counts, signal metrics, queue health, drops, reconnects, startup cache
   state, and per-stream packet/event counters.
+- A "Channels" section in the plugin settings page with two admin actions:
+  "Rebuild channels" (reconnects to TVHeadend so it resends its full channel
+  list, then best-effort queues Jellyfin's own Live TV guide/channel refresh
+  task) and "Clear channel logo cache" (force re-downloads all cached channel
+  logos, ignoring retention/fingerprint checks).
 - Jellyfin 10.11 / .NET 9 packaging metadata, plus a Jellyfin 12.0 / .NET 10
   build for newer servers.
 

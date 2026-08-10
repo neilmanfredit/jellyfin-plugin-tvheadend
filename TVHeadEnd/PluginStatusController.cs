@@ -5,9 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaBrowser.Model.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using TVHeadEnd.HTSP;
 using TVHeadEnd.HTSP_Responses;
 
@@ -236,5 +238,117 @@ namespace TVHeadEnd
     {
         public string Id { get; set; }
         public string Name { get; set; }
+    }
+
+    public sealed class ChannelRebuildResult
+    {
+        public int ChannelCount { get; set; }
+        public string QueuedJellyfinTask { get; set; }
+    }
+
+    public sealed class ChannelImageCachePurgeResult
+    {
+        public int ChannelCount { get; set; }
+        public int ImagesPurged { get; set; }
+    }
+
+    [ApiController]
+    [Authorize(Policy = "RequiresElevation")]
+    [Route("TVHeadEnd/Channels")]
+    public sealed class PluginChannelsController : ControllerBase
+    {
+        private readonly HTSConnectionHandler _connectionHandler;
+        private readonly LiveTvService _liveTvService;
+        private readonly ITaskManager _taskManager;
+        private readonly ILogger<PluginChannelsController> _logger;
+
+        public PluginChannelsController(
+            HTSConnectionHandler connectionHandler,
+            LiveTvService liveTvService,
+            ITaskManager taskManager,
+            ILogger<PluginChannelsController> logger)
+        {
+            _connectionHandler = connectionHandler;
+            _liveTvService = liveTvService;
+            _taskManager = taskManager;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Forces a fresh HTSP connection so TVHeadend resends its full channel list, then
+        /// re-derives Jellyfin's channel data from it and best-effort queues Jellyfin's own
+        /// Live TV guide/channel scheduled task (if one can be unambiguously identified) so
+        /// new/removed channels are reflected in Jellyfin's Live TV section without waiting
+        /// for its normal schedule.
+        /// </summary>
+        [HttpPost("Rebuild")]
+        public async Task<ActionResult<ChannelRebuildResult>> Rebuild(CancellationToken cancellationToken)
+        {
+            var result = await _connectionHandler.RebuildChannelsAsync(cancellationToken).ConfigureAwait(false);
+            if (result == -1)
+            {
+                return StatusCode(StatusCodes.Status504GatewayTimeout, "Timed out waiting for TVHeadend to resend the channel list.");
+            }
+
+            var channels = (await _liveTvService.GetChannelsAsync(cancellationToken).ConfigureAwait(false)).ToList();
+
+            return Ok(new ChannelRebuildResult
+            {
+                ChannelCount = channels.Count,
+                QueuedJellyfinTask = TryQueueGuideRefreshTask()
+            });
+        }
+
+        /// <summary>
+        /// Deletes every cached channel logo regardless of retention/fingerprint and
+        /// re-downloads them from TVHeadend, for when a logo needs to be force-refreshed
+        /// without a full channel rebuild.
+        /// </summary>
+        [HttpPost("ClearImageCache")]
+        public async Task<ActionResult<ChannelImageCachePurgeResult>> ClearImageCache(CancellationToken cancellationToken)
+        {
+            var purged = await _connectionHandler.PurgeChannelImageCacheAsync(cancellationToken).ConfigureAwait(false);
+            var channels = (await _liveTvService.GetChannelsAsync(cancellationToken).ConfigureAwait(false)).ToList();
+
+            return Ok(new ChannelImageCachePurgeResult
+            {
+                ChannelCount = channels.Count,
+                ImagesPurged = purged
+            });
+        }
+
+        /// <summary>
+        /// Jellyfin's Live TV channel/guide sync has no public force-refresh API, so this is
+        /// a best-effort heuristic match against the server's own scheduled tasks. It only
+        /// acts when exactly one candidate is found, and any failure here is logged and
+        /// swallowed - the TVHeadend-side rebuild above already succeeded regardless.
+        /// </summary>
+        private string TryQueueGuideRefreshTask()
+        {
+            try
+            {
+                var candidates = _taskManager.ScheduledTasks
+                    .Where(worker => worker.ScheduledTask is not null
+                        && worker.Category != null
+                        && worker.Category.Contains("live tv", StringComparison.OrdinalIgnoreCase)
+                        && worker.Name != null
+                        && (worker.Name.Contains("guide", StringComparison.OrdinalIgnoreCase)
+                            || worker.Name.Contains("channel", StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+
+                if (candidates.Count != 1)
+                {
+                    return null;
+                }
+
+                _taskManager.QueueScheduledTask(candidates[0].ScheduledTask, new TaskOptions());
+                return candidates[0].Name;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "[TVHclient] Could not queue Jellyfin's own channel/guide refresh task; the TVHeadend-side rebuild still succeeded");
+                return null;
+            }
+        }
     }
 }

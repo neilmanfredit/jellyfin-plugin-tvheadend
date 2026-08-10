@@ -1,7 +1,7 @@
 name: "TvheadEndNew"
 guid: "541072f6-f018-4c48-bcbc-ef80734c0df7"
 imageUrl: "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png"
-version: 2
+version: 3
 targetAbi: "12.0.0.0"
 framework: "net10.0"
 owner: "neilmanfredit"
@@ -11,6 +11,11 @@ category: "LiveTV"
 artifacts:
   - "TVHeadEnd.dll"
 changelog: |-
+  - Added a "Channels" section to the plugin settings page with two admin
+    actions: "Rebuild channels" (forces a fresh HTSP connection so
+    TVHeadend resends its channel list, then best-effort queues Jellyfin's
+    own Live TV guide/channel refresh task) and "Clear channel logo cache"
+    (force re-downloads all cached channel logos).
   - Ported to the Jellyfin 12.0 plugin ABI (net10.0, Jellyfin.Controller
     12.0.0-rc4). No source changes were required beyond retargeting, since
     the underlying MediaBrowser.* assemblies stayed source-compatible.

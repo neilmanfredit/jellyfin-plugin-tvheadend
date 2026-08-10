@@ -242,6 +242,16 @@ export default function (view, params) {
             resetButton.title = 'Reset TVHeadend plugin settings to their default values, keeping hostname, username, and password.';
             resetButton.setAttribute('aria-label', 'Reset TVHeadend plugin settings to defaults, keeping hostname, username, and password');
         }
+
+        const rebuildButton = page.querySelector('#btnRebuildChannels');
+        if (rebuildButton) {
+            rebuildButton.setAttribute('aria-label', 'Rebuild the channel list from TVHeadend');
+        }
+
+        const clearImageCacheButton = page.querySelector('#btnClearChannelImageCache');
+        if (clearImageCacheButton) {
+            clearImageCacheButton.setAttribute('aria-label', 'Clear and re-download all cached channel logos');
+        }
     }
 
     function updateDependentState(page) {
@@ -344,6 +354,33 @@ export default function (view, params) {
         return statusRequestInFlight;
     }
 
+    function setChannelActionBusy(page, busy) {
+        ['btnRebuildChannels', 'btnClearChannelImageCache'].forEach(id => {
+            const button = page.querySelector('#' + id);
+            if (button) button.disabled = busy;
+        });
+    }
+
+    function runChannelAction(page, url, confirmMessage, busyMessage) {
+        if (confirmMessage && !window.confirm(confirmMessage)) return Promise.resolve(null);
+        const resultEl = page.querySelector('#channelActionResult');
+        setChannelActionBusy(page, true);
+        if (resultEl) resultEl.textContent = busyMessage;
+        Dashboard.showLoadingMsg();
+        return ApiClient.ajax({
+            type: 'POST',
+            url: ApiClient.getUrl(url),
+            dataType: 'json'
+        }).catch(error => {
+            if (resultEl) resultEl.textContent = `Failed: ${escapeHtml(error && error.message ? error.message : 'unknown error')}`;
+            throw error;
+        }).finally(() => {
+            setChannelActionBusy(page, false);
+            Dashboard.hideLoadingMsg();
+            loadStatus(page, false);
+        });
+    }
+
     function startStatusPolling(page) {
         stopStatusPolling();
         loadStatus(page, true);
@@ -389,6 +426,35 @@ export default function (view, params) {
             loadConfig(view, config);
             loadStatus(view, false);
         }).finally(() => Dashboard.hideLoadingMsg());
+    });
+
+    view.querySelector('#btnRebuildChannels').addEventListener('click', function () {
+        runChannelAction(
+            view,
+            'TVHeadEnd/Channels/Rebuild',
+            'Rebuild channels from TVHeadend? This reconnects to TVHeadend and may briefly interrupt active streams.',
+            'Rebuilding channels…'
+        ).then(result => {
+            if (!result) return;
+            const resultEl = view.querySelector('#channelActionResult');
+            if (!resultEl) return;
+            resultEl.textContent = result.QueuedJellyfinTask
+                ? `Rebuilt ${result.ChannelCount} channel(s) from TVHeadend and queued Jellyfin's "${result.QueuedJellyfinTask}" task.`
+                : `Rebuilt ${result.ChannelCount} channel(s) from TVHeadend. If channels were added or removed, also run Jellyfin's own Live TV guide/channel refresh under Dashboard → Scheduled Tasks to sync them.`;
+        }).catch(() => {});
+    });
+
+    view.querySelector('#btnClearChannelImageCache').addEventListener('click', function () {
+        runChannelAction(
+            view,
+            'TVHeadEnd/Channels/ClearImageCache',
+            'Clear all cached channel logos and re-download them from TVHeadend?',
+            'Clearing channel logo cache…'
+        ).then(result => {
+            if (!result) return;
+            const resultEl = view.querySelector('#channelActionResult');
+            if (resultEl) resultEl.textContent = `Cleared ${result.ImagesPurged} cached logo file(s) for ${result.ChannelCount} channel(s) and re-downloaded them from TVHeadend.`;
+        }).catch(() => {});
     });
 
     view.querySelector('.TVHclientConfigurationForm').addEventListener('submit', function (e) {
