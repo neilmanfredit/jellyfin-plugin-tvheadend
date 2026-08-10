@@ -33,13 +33,25 @@ official upstream TVHeadend plugin without conflict.
 
 ## Requirements
 
-- Jellyfin server compatible with plugin ABI `12.0.0.0` (current `master`,
-  built against `net10.0`), or `10.11.0.0` for the earlier `v1.0.0.0` release
-  (built against `net9.0`). The repository manifest publishes both, and
-  Jellyfin's catalogue picks whichever matches your server.
-- TVHeadend with HTTP and HTSP access enabled.
-- .NET 10 SDK to build `master` from source (.NET 9 SDK for the `10.11.0.0`
-  release line).
+TvheadEndNew targets whatever Jellyfin actually ships. As of this writing
+that's two lines — Jellyfin has no `11.x`; the project went straight from
+`10.11.11` (its last `10.x` release) to `12.0` (currently `12.0-rc4`, not yet
+stable):
+
+| Jellyfin server        | Plugin version | targetAbi     | Built with              |
+|-------------------------|-----------------|---------------|--------------------------|
+| `12.0.x` (incl. RCs)    | `2.0.0.0`       | `12.0.0.0`    | `net10.0` SDK            |
+| `10.11.x`               | `1.0.0.0`       | `10.11.0.0`   | `net9.0` SDK             |
+
+The repository manifest publishes both versions; Jellyfin's plugin
+catalogue automatically shows whichever one is ABI-compatible with your
+server, so you always add the same repository URL regardless of which
+Jellyfin version you run. TVHeadend itself needs HTTP and HTSP access
+enabled.
+
+`master` currently builds the `2.0.0.0` / Jellyfin 12 line. To build the
+`1.0.0.0` / Jellyfin 10.11 line from source, check out the `v1.0.0.0` tag —
+`master` no longer targets `net9.0`.
 
 ## Installation
 
@@ -85,8 +97,35 @@ still available when you want TVHeadend to provide the transport stream directly
 
 ## Building and Releasing
 
-The project targets `net10.0` (Jellyfin 12.0 ABI) on `master`, and can be
-built with:
+### Installing the .NET SDK
+
+`master` targets `net10.0` (Jellyfin 12.0 ABI) and needs the .NET 10 SDK
+plus the ASP.NET Core 10.0 runtime (pulled in transitively via
+`Jellyfin.Controller`, and required to actually *run* anything built against
+it, e.g. `TVHeadEnd.LifecycleChecks`). Building the `v1.0.0.0` tag
+(Jellyfin 10.11 line) instead needs the .NET 9 SDK.
+
+- **Arch / Manjaro**:
+
+  ```bash
+  sudo pacman -S dotnet-sdk-10.0 aspnet-runtime-10.0   # master (net10.0)
+  sudo pacman -S dotnet-sdk-9.0                         # v1.0.0.0 tag (net9.0)
+  ```
+
+- **Debian / Ubuntu, Fedora, Windows, macOS**: follow Microsoft's official
+  install instructions for your platform:
+  [dotnet.microsoft.com/download](https://dotnet.microsoft.com/download) —
+  or use the [dotnet-install script](https://learn.microsoft.com/dotnet/core/tools/dotnet-install-script)
+  for a user-local install with no root/admin needed:
+
+  ```bash
+  curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 10.0
+  ```
+
+Verify with `dotnet --list-sdks` and `dotnet --list-runtimes` — you should
+see the matching SDK and (for `master`) `Microsoft.AspNetCore.App 10.0.x`.
+
+### Build
 
 ```powershell
 dotnet build
