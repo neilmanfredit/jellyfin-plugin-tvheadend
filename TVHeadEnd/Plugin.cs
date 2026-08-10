@@ -55,6 +55,7 @@ namespace TVHeadEnd
                 new PluginPageInfo
                 {
                     Name = "tvheadend",
+                    DisplayName = "TVHeadend Configuration",
                     EmbeddedResourcePath = GetType().Namespace + ".Web.tvheadend.html",
                     EnableInMainMenu = true
                 },
@@ -62,6 +63,18 @@ namespace TVHeadEnd
                 {
                     Name = "tvheadendjs",
                     EmbeddedResourcePath = GetType().Namespace + ".Web.tvheadend.js"
+                },
+                new PluginPageInfo
+                {
+                    Name = "tvheadendstatus",
+                    DisplayName = "TVHeadend Status",
+                    EmbeddedResourcePath = GetType().Namespace + ".Web.tvheadend-status.html",
+                    EnableInMainMenu = true
+                },
+                new PluginPageInfo
+                {
+                    Name = "tvheadendstatusjs",
+                    EmbeddedResourcePath = GetType().Namespace + ".Web.tvheadend-status.js"
                 }
             };
         }

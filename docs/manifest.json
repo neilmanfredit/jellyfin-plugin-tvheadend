@@ -9,6 +9,14 @@
     "imageUrl": "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png",
     "versions": [
       {
+        "version": "2.4.0.0",
+        "changelog": "- Split the plugin settings page into two: \"TVHeadend Configuration\" (settings only) and \"TVHeadend Status\" (runtime status, active tuners, and the Channels admin actions). The status page's 5-second polling no longer shares a page/DOM with the settings form. Also improved save/load error messages (HTTP status instead of a generic \"unknown error\") to help diagnose any future failures.",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.4.0.0/TvheadEndNew_2.4.0.0.zip",
+        "checksum": "96342c03b25cda3a495d707615cc3e19",
+        "timestamp": "2026-08-10T18:07:24Z"
+      },
+      {
         "version": "2.3.0.0",
         "changelog": "- Fixed a bug where many TVHeadend channels were silently dropped and never reached Jellyfin: the \"Channels tagged Other\" setting was wired to HTSConnectionHandler before plugin configuration was loaded, so it was always null - any channel whose primary service was tagged \"other\" threw and got silently skipped. Channels without an assigned LCN (channel number 0/unset) were also unconditionally dropped even though they're valid TVHeadend channels. Channels with no active service (or an unrecognized tag) now also fall through to the \"Channels tagged Other\" setting instead of being dropped outright.\n- Fixed the settings page occasionally failing to save with no feedback and getting stuck on a loading spinner: the configuration load and save requests had no error handling at all, so any failed request (network hiccup, server error) left Dashboard's loading spinner showing forever with no indication anything went wrong.",
         "targetAbi": "12.0.0.0",

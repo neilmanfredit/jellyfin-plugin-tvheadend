@@ -9,8 +9,12 @@
   <ItemGroup>
     <None Remove="Web\tvheadend.html" />
     <None Remove="Web\tvheadend.js" />
+    <None Remove="Web\tvheadend-status.html" />
+    <None Remove="Web\tvheadend-status.js" />
     <EmbeddedResource Include="Web\tvheadend.html" />
     <EmbeddedResource Include="Web\tvheadend.js" />
+    <EmbeddedResource Include="Web\tvheadend-status.html" />
+    <EmbeddedResource Include="Web\tvheadend-status.js" />
   </ItemGroup>
 
   <ItemGroup>

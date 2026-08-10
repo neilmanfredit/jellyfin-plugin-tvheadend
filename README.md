@@ -25,15 +25,19 @@ official upstream TVHeadend plugin without conflict.
 - Signal monitoring and recovery for HTSP streams, including lock/SNR/UNC
   tracking, damaged video withholding until a clean keyframe, and bounded
   reconnects.
-- Runtime status in the plugin settings page: connection state, active tuners,
-  reader counts, signal metrics, queue health, drops, reconnects, startup cache
-  state, and per-stream packet/event counters.
-- A "Channels" section in the plugin settings page with two admin actions:
-  "Rebuild channels" (reconnects to TVHeadend so it resends its full channel
-  list, removes channels no longer present on TVHeadend, and best-effort
-  queues Jellyfin's own Live TV guide/channel refresh task so newly added
-  channels are picked up) and "Clear channel logo cache" (force re-downloads
-  all cached channel logos, ignoring retention/fingerprint checks).
+- Two separate plugin pages, so live status polling never touches the
+  settings form: **TVHeadend Configuration** (connection, HTSP, and signal
+  recovery settings) and **TVHeadend Status** (runtime status, active tuners,
+  and channel maintenance).
+- Runtime status on the Status page: connection state, active tuners, reader
+  counts, signal metrics, queue health, drops, reconnects, startup cache
+  state, and per-stream packet/event counters, refreshed every 5 seconds.
+- A "Channels" section on the Status page with two admin actions: "Rebuild
+  channels" (reconnects to TVHeadend so it resends its full channel list,
+  removes channels no longer present on TVHeadend, and best-effort queues
+  Jellyfin's own Live TV guide/channel refresh task so newly added channels
+  are picked up) and "Clear channel logo cache" (force re-downloads all
+  cached channel logos, ignoring retention/fingerprint checks).
 - Jellyfin 10.11 / .NET 9 packaging metadata, plus a Jellyfin 12.0 / .NET 10
   build for newer servers.
 

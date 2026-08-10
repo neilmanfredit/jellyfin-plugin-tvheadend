@@ -1,0 +1,235 @@
+<div id="TVHclientStatusPage" data-role="page" class="page type-interior pluginConfigurationPage" data-controller="__plugin/tvheadendstatusjs">
+    <style>
+        #TVHclientStatusPage {
+            --tvh-radius: .7em;
+            --tvh-radius-small: .48em;
+            --tvh-surface: rgba(128,128,128,.08);
+            --tvh-surface-strong: rgba(128,128,128,.13);
+            --tvh-border: rgba(128,128,128,.28);
+            --tvh-divider: rgba(128,128,128,.22);
+            --tvh-focus: currentColor;
+        }
+        @supports (background: color-mix(in srgb, currentColor 10%, transparent)) {
+            #TVHclientStatusPage {
+                --tvh-surface: color-mix(in srgb, currentColor 6%, transparent);
+                --tvh-surface-strong: color-mix(in srgb, currentColor 10%, transparent);
+                --tvh-border: color-mix(in srgb, currentColor 24%, transparent);
+                --tvh-divider: color-mix(in srgb, currentColor 18%, transparent);
+            }
+        }
+        #TVHclientStatusPage *,
+        #TVHclientStatusPage *::before,
+        #TVHclientStatusPage *::after { box-sizing: border-box; }
+        #TVHclientStatusPage .content-primary { min-width: 0; }
+        #TVHclientStatusPage .tvhPageHeader { margin-bottom: 1.4em; }
+        #TVHclientStatusPage .tvhPageHeader h2 { margin-bottom: .25em; }
+        #TVHclientStatusPage .tvhMuted { opacity: .72; }
+        #TVHclientStatusPage .tvhSection {
+            margin: 1.25em 0 0;
+            border: 1px solid var(--tvh-border);
+            border-radius: var(--tvh-radius);
+            background: var(--tvh-surface);
+            overflow: clip;
+        }
+        #TVHclientStatusPage .tvhSection > summary,
+        #TVHclientStatusPage .tvhRunningChannel details > summary {
+            cursor: pointer;
+            overflow-wrap: anywhere;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        #TVHclientStatusPage .tvhSection > summary {
+            padding: 1em 1.1em;
+            font-size: 1.08em;
+            font-weight: 600;
+            background: var(--tvh-surface-strong);
+        }
+        #TVHclientStatusPage .tvhSection > summary:hover,
+        #TVHclientStatusPage .tvhRunningChannel details > summary:hover { filter: brightness(1.08); }
+        #TVHclientStatusPage .tvhSection > summary:focus-visible,
+        #TVHclientStatusPage .tvhRunningChannel details > summary:focus-visible,
+        #TVHclientStatusPage #btnRefreshStatus:focus-visible,
+        #TVHclientStatusPage .tvhTableWrap:focus-visible {
+            outline: 2px solid var(--tvh-focus);
+            outline-offset: 2px;
+        }
+        #TVHclientStatusPage .tvhSectionBody { padding: 1em 1.1em 1.1em; }
+        #TVHclientStatusPage .tvhStatusHeader {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: .8em 1em;
+            margin: 0 0 .8em;
+            min-width: 0;
+        }
+        #TVHclientStatusPage .tvhStatusHeader > * { min-width: 0; }
+        #TVHclientStatusPage .tvhStatusHeader h2 { margin: 0; }
+        #TVHclientStatusPage .tvhStatusSummary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 125px), 1fr));
+            gap: .5em;
+            margin-bottom: .75em;
+            min-width: 0;
+        }
+        #TVHclientStatusPage .tvhMetric {
+            padding: .62em;
+            border-radius: var(--tvh-radius-small);
+            overflow: hidden;
+        }
+        #TVHclientStatusPage .tvhMetricLabel { display: block; opacity: .72; font-size: .76em; }
+        #TVHclientStatusPage .tvhMetricValue {
+            display: block;
+            margin-top: .12em;
+            font-size: .96em;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        #TVHclientStatusPage .tvhMeter {
+            height: .32em;
+            margin-top: .4em;
+            border-radius: 999px;
+            overflow: hidden;
+            background: var(--tvh-divider);
+        }
+        #TVHclientStatusPage .tvhMeterFill {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: currentColor;
+            opacity: .72;
+            transition: width .25s ease;
+        }
+        #TVHclientStatusPage .tvhRunningChannel {
+            padding: 1em;
+            border-radius: var(--tvh-radius);
+            margin-bottom: 1em;
+            min-width: 0;
+        }
+        #TVHclientStatusPage .tvhRunningChannelTitle {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: .6em;
+            margin-bottom: .8em;
+            min-width: 0;
+        }
+        #TVHclientStatusPage .tvhRunningChannelTitle h3 {
+            margin: 0;
+            min-width: 0;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+        }
+        #TVHclientStatusPage .tvhBadgeGroup { display: flex; flex-wrap: wrap; gap: .35em; justify-content: flex-end; }
+        #TVHclientStatusPage .tvhBadge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 1.8em;
+            padding: .18em .58em;
+            border: 1px solid var(--tvh-border);
+            border-radius: 999px;
+            background: var(--tvh-surface-strong);
+            font-size: .82em;
+            line-height: 1.2;
+        }
+        #TVHclientStatusPage .tvhBadgeGood { background: rgba(46,160,75,.18); border-color: rgba(46,160,75,.48); }
+        #TVHclientStatusPage .tvhBadgeWarn { background: rgba(215,135,28,.19); border-color: rgba(215,135,28,.52); }
+        #TVHclientStatusPage .tvhBadgeBad { background: rgba(205,55,55,.18); border-color: rgba(205,55,55,.5); }
+        #TVHclientStatusPage .tvhTableWrap {
+            max-width: 100%;
+            overflow-x: auto;
+            overscroll-behavior-inline: contain;
+            -webkit-overflow-scrolling: touch;
+            margin-top: .8em;
+            border: 1px solid var(--tvh-border);
+            border-radius: var(--tvh-radius-small);
+        }
+        #TVHclientStatusPage .tvhTable { width: 100%; min-width: 650px; border-collapse: collapse; font-size: .92em; }
+        #TVHclientStatusPage .tvhTable th,
+        #TVHclientStatusPage .tvhTable td {
+            text-align: left;
+            padding: .55em .62em;
+            border-bottom: 1px solid var(--tvh-divider);
+            white-space: nowrap;
+        }
+        #TVHclientStatusPage .tvhTable th { background: var(--tvh-surface-strong); font-weight: 600; }
+        #TVHclientStatusPage .tvhTable tbody tr:last-child td { border-bottom: 0; }
+        #TVHclientStatusPage .tvhTable td:nth-child(5) {
+            max-width: 18em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #TVHclientStatusPage .tvhEmpty {
+            padding: 1.2em;
+            border-radius: var(--tvh-radius);
+            text-align: center;
+            overflow-wrap: anywhere;
+            background: var(--tvh-surface);
+            border: 1px solid var(--tvh-border);
+            box-shadow: 0 .08em .22em rgba(0,0,0,.08);
+        }
+        #TVHclientStatusPage .tvhInlineButtons { display: flex; flex-wrap: wrap; gap: .6em; }
+        #TVHclientStatusPage .tvhSrOnly {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0,0,0,0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        #TVHclientStatusPage [aria-busy="true"] { cursor: progress; }
+        @media (max-width: 600px) {
+            #TVHclientStatusPage .tvhSectionBody { padding: .82em; }
+            #TVHclientStatusPage .tvhSection > summary { padding: .9em .82em; }
+            #TVHclientStatusPage .tvhRunningChannel { padding: .82em; }
+            #TVHclientStatusPage .tvhStatusHeader { align-items: stretch; }
+            #TVHclientStatusPage .tvhStatusHeader > div:first-child { flex: 1 1 100%; }
+            #TVHclientStatusPage .tvhInlineButtons,
+            #TVHclientStatusPage #btnRefreshStatus { width: 100%; }
+            #TVHclientStatusPage .tvhRunningChannelTitle { display: block; }
+            #TVHclientStatusPage .tvhBadgeGroup { justify-content: flex-start; margin-top: .55em; }
+            #TVHclientStatusPage .tvhStatusSummary { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 380px) {
+            #TVHclientStatusPage .tvhStatusSummary { grid-template-columns: 1fr; }
+            #TVHclientStatusPage .tvhMetricValue { font-size: 1em; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #TVHclientStatusPage .tvhMeterFill { transition: none; }
+        }
+    </style>
+
+    <div data-role="content">
+        <div class="content-primary">
+            <div class="tvhPageHeader">
+                <h2>TVHeadend Status</h2>
+                <div class="tvhMuted">Live connection state, active tuners, and channel maintenance. Settings live on the TVHeadend Configuration page.</div>
+            </div>
+
+            <div class="tvhStatusHeader">
+                <div><h2>Plugin status</h2><div id="statusUpdated" class="tvhMuted">Loading runtime information…</div><div id="statusAnnouncer" class="tvhSrOnly" role="status" aria-live="polite" aria-atomic="true"></div></div>
+                <div class="tvhInlineButtons"><button is="emby-button" type="button" id="btnRefreshStatus" class="raised" aria-controls="statusSummary activeTuners" title="Refresh live plugin and tuner status now. Status also refreshes automatically every five seconds."><span>Refresh</span></button></div>
+            </div>
+            <div id="statusSummary" class="tvhStatusSummary" aria-label="Plugin runtime summary"></div>
+            <div id="activeTuners" aria-busy="true"><div class="tvhEmpty">Loading active tuners…</div></div>
+
+            <details class="tvhSection" open>
+                <summary>Channels</summary>
+                <div class="tvhSectionBody">
+                    <div class="fieldDescription">"Rebuild channels" reconnects to TVHeadend so it resends its full channel list, removes any channels no longer on TVHeadend, and best-effort triggers Jellyfin's own Live TV channel/guide refresh so newly added channels show up here without waiting for its normal schedule. This briefly interrupts active streams. "Clear channel logo cache" only force-refreshes channel logos.</div>
+                    <div class="tvhInlineButtons">
+                        <button is="emby-button" type="button" id="btnRebuildChannels" class="raised" title="Reconnect to TVHeadend and re-pull the channel list into Jellyfin. Briefly interrupts active streams."><span>Rebuild channels</span></button>
+                        <button is="emby-button" type="button" id="btnClearChannelImageCache" class="raised" title="Delete all cached channel logos and re-download them from TVHeadend."><span>Clear channel logo cache</span></button>
+                    </div>
+                    <div id="channelActionResult" class="tvhMuted" role="status" aria-live="polite"></div>
+                </div>
+            </details>
+
+        </div>
+    </div>
+</div>
