@@ -9,76 +9,20 @@
     "imageUrl": "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png",
     "versions": [
       {
-        "version": "2.4.2.0",
-        "changelog": "- Moved the \"Channels\" section (Rebuild channels / Clear channel logo cache) from the TVHeadend Status page to the TVHeadend Configuration page, alongside the rest of the channel presentation settings. The Status page stays read-only: connection state and active tuners only.",
+        "version": "2.4.3.0",
+        "changelog": "- Restored full Jellyfin 10.11.x feature parity: the project now builds from a single dual-targeted csproj (net9.0 for the 10.11.0.0 ABI, net10.0 for the 12.0.0.0 ABI) instead of the 10.11.x line being frozen at the original fork's feature set. Every feature added since the Jellyfin 12 port (Channels admin actions, the Configuration/Status page split, HTSP reliability fixes, the channel-drop fixes) now ships for both server lines from the same commit. Published as 2.4.3.0 (net10.0/12.0.0.0 ABI) and 1.1.0.0 (net9.0/10.11.0.0 ABI).",
         "targetAbi": "12.0.0.0",
-        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.4.2.0/TvheadEndNew_2.4.2.0.zip",
-        "checksum": "836b1e0a885bc2138ff8ddfc7957566b",
-        "timestamp": "2026-08-10T18:28:22Z"
+        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.4.3.0/TvheadEndNew_2.4.3.0.zip",
+        "checksum": "f118afa40b53157e6c9999dbc9b44925",
+        "timestamp": "2026-08-11T07:00:02Z"
       },
       {
-        "version": "2.4.1.0",
-        "changelog": "- Fixed the actual root cause of every \"settings won't save\" report: tvheadend.js hardcoded the plugin's pre-rename GUID (3fd018e5-5e78-4e58-b280-a0c068febee0) to look up its own configuration, left over from before the TvheadEndNew rename to a new GUID (541072f6-f018-4c48-bcbc-ef80734c0df7). Every load/save request was hitting a plugin id that no longer exists, returning HTTP 404.",
-        "targetAbi": "12.0.0.0",
-        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.4.1.0/TvheadEndNew_2.4.1.0.zip",
-        "checksum": "21be253b76fafad7a4690d96a913bf0d",
-        "timestamp": "2026-08-10T18:13:55Z"
-      },
-      {
-        "version": "2.4.0.0",
-        "changelog": "- Split the plugin settings page into two: \"TVHeadend Configuration\" (settings only) and \"TVHeadend Status\" (runtime status, active tuners, and the Channels admin actions). The status page's 5-second polling no longer shares a page/DOM with the settings form. Also improved save/load error messages (HTTP status instead of a generic \"unknown error\") to help diagnose any future failures.",
-        "targetAbi": "12.0.0.0",
-        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.4.0.0/TvheadEndNew_2.4.0.0.zip",
-        "checksum": "96342c03b25cda3a495d707615cc3e19",
-        "timestamp": "2026-08-10T18:07:24Z"
-      },
-      {
-        "version": "2.3.0.0",
-        "changelog": "- Fixed a bug where many TVHeadend channels were silently dropped and never reached Jellyfin: the \"Channels tagged Other\" setting was wired to HTSConnectionHandler before plugin configuration was loaded, so it was always null - any channel whose primary service was tagged \"other\" threw and got silently skipped. Channels without an assigned LCN (channel number 0/unset) were also unconditionally dropped even though they're valid TVHeadend channels. Channels with no active service (or an unrecognized tag) now also fall through to the \"Channels tagged Other\" setting instead of being dropped outright.\n- Fixed the settings page occasionally failing to save with no feedback and getting stuck on a loading spinner: the configuration load and save requests had no error handling at all, so any failed request (network hiccup, server error) left Dashboard's loading spinner showing forever with no indication anything went wrong.",
-        "targetAbi": "12.0.0.0",
-        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.3.0.0/TvheadEndNew_2.3.0.0.zip",
-        "checksum": "c7c252b3147bd703e998b2921a3feaed",
-        "timestamp": "2026-08-10T17:34:07Z"
-      },
-      {
-        "version": "2.2.0.0",
-        "changelog": "- \"Rebuild channels\" now explicitly removes this service's stored LiveTvChannel items that are no longer present on TVHeadend, instead of relying only on Jellyfin's own channel/guide task (which does not reliably remove stale channels on its own). New channels are still picked up via that best-effort task trigger.",
-        "targetAbi": "12.0.0.0",
-        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.2.0.0/TvheadEndNew_2.2.0.0.zip",
-        "checksum": "6f969264ee6863049b434163fd619ced",
-        "timestamp": "2026-08-10T17:20:24Z"
-      },
-      {
-        "version": "2.1.1.0",
-        "changelog": "- Fixed the \"Channels\" section's two new buttons breaking the settings page: their click handlers ran unguarded before the form's save handler was registered, so if either button element wasn't found the resulting error stopped the save handler from ever being attached (settings silently failed to save). Also bounded the \"Rebuild channels\" and \"Clear channel logo cache\" requests to 45 seconds instead of inheriting a 15-minute background-sync timeout, so a slow or unreachable TVHeadend server can no longer leave the page stuck on a loading spinner.",
-        "targetAbi": "12.0.0.0",
-        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.1.1.0/TvheadEndNew_2.1.1.0.zip",
-        "checksum": "12b81c458f5491488139bc4abc252375",
-        "timestamp": "2026-08-10T17:07:31Z"
-      },
-      {
-        "version": "2.1.0.0",
-        "changelog": "- Added a \"Channels\" section to the plugin settings page with two admin actions: \"Rebuild channels\" (forces a fresh HTSP connection so TVHeadend resends its channel list, then best-effort queues Jellyfin's own Live TV guide/channel refresh task) and \"Clear channel logo cache\" (force re-downloads all cached channel logos).",
-        "targetAbi": "12.0.0.0",
-        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.1.0.0/TvheadEndNew_2.1.0.0.zip",
-        "checksum": "e1965e8de2c7cb0455b4aa878b1de244",
-        "timestamp": "2026-08-10T16:57:18Z"
-      },
-      {
-        "version": "2.0.0.0",
-        "changelog": "- Ported to the Jellyfin 12.0 plugin ABI (net10.0, Jellyfin.Controller 12.0.0-rc4). No source changes were required beyond retargeting, since the underlying MediaBrowser.* assemblies stayed source-compatible.\n- Forked and renamed to TvheadEndNew with a distinct plugin GUID so it can be installed alongside the official upstream TVHeadend plugin.",
-        "targetAbi": "12.0.0.0",
-        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.0.0.0/TvheadEndNew_2.0.0.0.zip",
-        "checksum": "6cd2da344b081b72b325d5c756e73bcb",
-        "timestamp": "2026-08-10T16:37:52Z"
-      },
-      {
-        "version": "1.0.0.0",
-        "changelog": "- Forked and renamed to TvheadEndNew with a distinct plugin GUID so it can be installed alongside the official upstream TVHeadend plugin.\n- Jellyfin 10.11 support (#100) @crobibero\n- Restore subtitles and multiple audio that got destroyed in commit db8cd9af238813a7b141ba826168fdaa22f1509e on Feb 18, 2018 (#68) @roman-vanicek\n- Further Release 10.9.x improvements (#92) @lomion0815\n- Readme: update build requirements (#93) @citronalco\n- Fixed link to TVHeadend image (#83) @lomion0815\n- Set correct dates for recordings (#84) @lomion0815\n- Changed HTSP field \"summary\" to correct name \"subtitle\". (#85) @lomion0815",
+        "version": "1.1.0.0",
+        "changelog": "- Restored full Jellyfin 10.11.x feature parity: the project now builds from a single dual-targeted csproj (net9.0 for the 10.11.0.0 ABI, net10.0 for the 12.0.0.0 ABI) instead of the 10.11.x line being frozen at the original fork's feature set. Every feature added since the Jellyfin 12 port (Channels admin actions, the Configuration/Status page split, HTSP reliability fixes, the channel-drop fixes) now ships for this line too. Published as 1.1.0.0 (net9.0/10.11.0.0 ABI) and 2.4.3.0 (net10.0/12.0.0.0 ABI).",
         "targetAbi": "10.11.0.0",
-        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v1.0.0.0/TvheadEndNew_1.0.0.0.zip",
-        "checksum": "c5c0f7de56060bb09f6a0e47b3911cdf",
-        "timestamp": "2026-08-10T16:07:00Z"
+        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v1.1.0.0/TvheadEndNew_1.1.0.0.zip",
+        "checksum": "36dfcb6d77bb5e19549b23a28bb002fa",
+        "timestamp": "2026-08-11T07:00:02Z"
       }
     ]
   }
