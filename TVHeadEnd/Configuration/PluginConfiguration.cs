@@ -43,6 +43,7 @@ namespace TVHeadEnd.Configuration
         public int HTSPHealthLogIntervalSeconds { get; set; }
         public bool HTSPSignalHealthLoggingEnabled { get; set; }
         public bool HTSPDetailedDiagnostics { get; set; }
+        public bool HTSPExposeSubtitleStreams { get; set; }
 
         public PluginConfiguration()
         {
@@ -89,6 +90,7 @@ namespace TVHeadEnd.Configuration
             HTSPHealthLogIntervalSeconds = 30;
             HTSPSignalHealthLoggingEnabled = true;
             HTSPDetailedDiagnostics = false;
+            HTSPExposeSubtitleStreams = false;
         }
     }
 }

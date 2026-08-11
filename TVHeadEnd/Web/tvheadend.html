@@ -152,6 +152,7 @@
                         <div class="inputContainer"><input is="emby-input" type="number" min="0" id="txtPostPadding" label="Post-recording padding (seconds)" /></div>
                         <div class="selectContainer"><select is="emby-select" id="selChannelType" label="Channels tagged Other"><option>TV</option><option>Radio</option><option>Ignore</option></select></div>
                         <div class="checkboxContainer"><label><input is="emby-checkbox" type="checkbox" id="chkHideRecordingsChannel" /><span>Hide TVHeadend Recordings channel</span></label></div>
+                        <div class="checkboxContainer checkboxContainer-withDescription"><label><input is="emby-checkbox" type="checkbox" id="chkHTSPExposeSubtitleStreams" /><span>Expose DVB subtitle and teletext tracks to Jellyfin</span></label><div class="fieldDescription checkboxFieldDescription">When disabled (default), subtitle and teletext tracks from the HTSP stream are not reported to Jellyfin's media-source metadata. Disable this if Live TV channels hang with an infinite loading spinner due to DVB subtitle/teletext tracks.</div></div>
                         <div class="checkboxContainer checkboxContainer-withDescription tvhExperimental"><label><input is="emby-checkbox" type="checkbox" id="chkForceDeinterlace" /><span>Force deinterlacing for all channels and recordings</span></label><div class="fieldDescription checkboxFieldDescription">Experimental. Requires a Jellyfin server restart.</div></div>
                     </div>
                 </details>

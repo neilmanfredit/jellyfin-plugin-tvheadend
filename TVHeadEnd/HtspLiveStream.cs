@@ -2777,12 +2777,19 @@ namespace TVHeadEnd
             var mediaStreams = new List<MediaStream>();
             MediaStream firstAudioStream = null;
             var ffmpegStreamIndex = 0;
+            var exposeSubtitles = Plugin.Instance?.Configuration?.HTSPExposeSubtitleStreams ?? false;
 
             foreach (var stream in streams.OrderBy(i => i.Index))
             {
                 var mediaStream = CreateMediaStream(stream, ffmpegStreamIndex);
                 if (mediaStream != null)
                 {
+                    if (mediaStream.Type == MediaStreamType.Subtitle && !exposeSubtitles)
+                    {
+                        ffmpegStreamIndex++;
+                        continue;
+                    }
+
                     if (mediaStream.Type == MediaStreamType.Audio && firstAudioStream == null)
                     {
                         mediaStream.IsDefault = true;

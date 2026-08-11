@@ -86,6 +86,7 @@ export default function (view, params) {
         page.querySelector('#txtHTSPHealthLogIntervalSeconds').value = Number.isFinite(values.HTSPHealthLogIntervalSeconds) ? values.HTSPHealthLogIntervalSeconds : 30;
         page.querySelector('#chkHTSPSignalHealthLoggingEnabled').checked = values.HTSPSignalHealthLoggingEnabled !== false;
         page.querySelector('#chkHTSPDetailedDiagnostics').checked = values.HTSPDetailedDiagnostics === true;
+        page.querySelector('#chkHTSPExposeSubtitleStreams').checked = values.HTSPExposeSubtitleStreams === true;
         updateDependentState(page);
     }
 
@@ -279,6 +280,7 @@ export default function (view, params) {
             config.HTSPHealthLogIntervalSeconds = intValue(form.querySelector('#txtHTSPHealthLogIntervalSeconds'), 30, 5, 600);
             config.HTSPSignalHealthLoggingEnabled = form.querySelector('#chkHTSPSignalHealthLoggingEnabled').checked;
             config.HTSPDetailedDiagnostics = form.querySelector('#chkHTSPDetailedDiagnostics').checked;
+            config.HTSPExposeSubtitleStreams = form.querySelector('#chkHTSPExposeSubtitleStreams').checked;
             return ApiClient.updatePluginConfiguration(TVHclientConfigurationPageVar.pluginUniqueId, config);
         }).then(result => {
             Dashboard.processPluginConfigurationUpdateResult(result);
