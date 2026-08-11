@@ -1,7 +1,7 @@
 name: "TvheadEndNew"
 guid: "541072f6-f018-4c48-bcbc-ef80734c0df7"
 imageUrl: "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png"
-version: 9
+version: 10
 targetAbi: "12.0.0.0"
 framework: "net10.0"
 owner: "neilmanfredit"
@@ -11,6 +11,15 @@ category: "LiveTV"
 artifacts:
   - "TVHeadEnd.dll"
 changelog: |-
+  - Restored full Jellyfin 10.11.x support with complete feature parity:
+    the project now builds from a single dual-targeted csproj
+    (net9.0 for the 10.11.0.0 ABI, net10.0 for the 12.0.0.0 ABI) instead
+    of the 10.11.x line being frozen at the old v1.0.0.0 feature set.
+    Every feature added since the Jellyfin 12 port (Channels admin
+    actions, the Configuration/Status page split, HTSP reliability
+    fixes, the channel-drop fixes) now ships for both server lines from
+    the same commit. Published as 2.4.3.0 (net10.0/12.0.0.0 ABI) and
+    1.1.0.0 (net9.0/10.11.0.0 ABI).
   - Moved the "Channels" section (Rebuild channels / Clear channel logo
     cache) from the TVHeadend Status page to the TVHeadend Configuration
     page, alongside the rest of the channel presentation settings. The
