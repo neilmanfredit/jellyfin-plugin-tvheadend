@@ -9,6 +9,22 @@
     "imageUrl": "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-tvheadend.png",
     "versions": [
       {
+        "version": "2.4.4.0",
+        "changelog": "- Add HTSPExposeSubtitleStreams option (default off): prevents DVB subtitle and teletext tracks being reported in Jellyfin media-source metadata, fixing Live TV channels that hang with an infinite loading spinner on channels carrying those tracks. Toggle on in Dashboard → Plugins → TVHeadend → Recordings and channel presentation if you want subtitle tracks exposed.",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v2.4.4.0/TvheadEndNew_2.4.4.0.zip",
+        "checksum": "e088610c723400b6782bfae5849652a7",
+        "timestamp": "2026-08-11T13:00:00Z"
+      },
+      {
+        "version": "1.1.1.0",
+        "changelog": "- Add HTSPExposeSubtitleStreams option (default off): prevents DVB subtitle and teletext tracks being reported in Jellyfin media-source metadata, fixing Live TV channels that hang with an infinite loading spinner on channels carrying those tracks. Toggle on in Dashboard → Plugins → TVHeadend → Recordings and channel presentation if you want subtitle tracks exposed.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/neilmanfredit/jellyfin-plugin-tvheadend/releases/download/v1.1.1.0/TvheadEndNew_1.1.1.0.zip",
+        "checksum": "395dcf3c367ab4b2872ef43646d1d273",
+        "timestamp": "2026-08-11T13:00:00Z"
+      },
+      {
         "version": "2.4.3.0",
         "changelog": "- Restored full Jellyfin 10.11.x feature parity: the project now builds from a single dual-targeted csproj (net9.0 for the 10.11.0.0 ABI, net10.0 for the 12.0.0.0 ABI) instead of the 10.11.x line being frozen at the original fork's feature set. Every feature added since the Jellyfin 12 port (Channels admin actions, the Configuration/Status page split, HTSP reliability fixes, the channel-drop fixes) now ships for both server lines from the same commit. Published as 2.4.3.0 (net10.0/12.0.0.0 ABI) and 1.1.0.0 (net9.0/10.11.0.0 ABI).",
         "targetAbi": "12.0.0.0",
