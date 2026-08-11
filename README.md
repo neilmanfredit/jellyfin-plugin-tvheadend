@@ -116,12 +116,19 @@ include them, or leave it as "Ignore" to exclude them.
 
 ## What the Plugin Looks Like
 
-No screenshots are included in this README; here's what's on each page.
+### Plugins menu
+
+TvheadEndNew adds two entries under **Dashboard → Plugins**: TVHeadend
+Configuration and TVHeadend Status.
+
+<img src="screenshots/MainPage.png" alt="Jellyfin dashboard sidebar showing the TVHeadend Configuration and TVHeadend Status plugin entries" width="280" />
 
 ### TVHeadend Configuration
 
 Reached via **Dashboard → Plugins → TvheadEndNew → TVHeadend Configuration**.
 A single settings form, organized into collapsible sections:
+
+<img src="screenshots/Configuration.png" alt="TVHeadend Configuration page showing collapsible sections for connection, HTSP streaming, signal monitoring, diagnostics, recordings and channel presentation, and channels" width="700" />
 
 - **Connection and authentication** — TVHeadend hostname/IP, TVHeadend
   timezone (defaults to auto-detected), HTTP port, "Use HTTPS" toggle, HTSP
@@ -157,6 +164,8 @@ Reached via **Dashboard → Plugins → TvheadEndNew → TVHeadend Status**.
 Read-only, polls every 5 seconds, and shares no DOM or requests with the
 Configuration page:
 
+<img src="screenshots/StatusPage.png" alt="TVHeadend Status page showing plugin version, TVHeadend server connection state, streaming method, running channel count, and active tuner list" width="900" />
+
 - A header with a **Refresh** button and a "last updated" timestamp.
 - A summary grid of runtime metrics (connection state, reader/subscription
   counts, signal lock/strength/SNR, queue depth, drops, reconnects, and
@@ -168,47 +177,11 @@ Configuration page:
 
 ## Changelog
 
-TvheadEndNew's own changes since forking from upstream, newest first (full
-per-release notes also ship in the plugin catalogue's changelog field):
-
 - **2.4.3.0 / 1.1.0.0** — Restored full Jellyfin 10.11.x feature parity: the
   project now builds from a single dual-targeted `TVHeadEnd.csproj`
   (`net9.0` for the `10.11.0.0` ABI, `net10.0` for the `12.0.0.0` ABI)
   instead of the 10.11.x line being frozen at the original fork's feature
   set. Every feature added since is now in both builds.
-- **2.4.2.0** — Moved the "Channels" section (Rebuild channels / Clear
-  channel logo cache) from the Status page to the Configuration page,
-  alongside the rest of the channel presentation settings.
-- **2.4.1.0** — Fixed the root cause of settings silently failing to save:
-  the settings page JavaScript still referenced the plugin's pre-rename
-  GUID, so every load/save request 404'd against a plugin ID that no longer
-  existed.
-- **2.4.0.0** — Split the single settings page into "TVHeadend
-  Configuration" (settings only) and "TVHeadend Status" (runtime status,
-  active tuners, Channels actions), so status polling can no longer
-  interfere with the settings form. Also switched error messages to report
-  the actual HTTP status instead of a generic "unknown error".
-- **2.3.0.0** — Fixed channels being silently dropped: the "Channels tagged
-  Other" setting was wired up before plugin configuration finished loading
-  (so it was always `null`, silently discarding any channel tagged
-  "other"), and channels without an assigned LCN were unconditionally
-  dropped even though they're valid. Also fixed the settings page getting
-  stuck on a loading spinner with no feedback on a failed save/load.
-- **2.2.0.0** — "Rebuild channels" now explicitly removes this service's
-  stored channels that are no longer present on TVHeadend, instead of
-  relying solely on Jellyfin's own guide task.
-- **2.1.1.0** — Fixed the Channels buttons' click handlers potentially
-  blocking the settings-save handler from ever being registered if a
-  button element was missing; bounded the channel actions to a 45-second
-  timeout instead of inheriting a 15-minute background-sync timeout.
-- **2.1.0.0** — Added the "Channels" section with "Rebuild channels" and
-  "Clear channel logo cache" admin actions.
-- **2.0.0.0** — Ported to the Jellyfin 12.0 plugin ABI. Forked and renamed
-  to TvheadEndNew with a distinct plugin GUID so it can be installed
-  alongside the official upstream TVHeadend plugin.
-- **1.0.0.0** — Initial fork baseline, carrying forward the last upstream
-  changes (Jellyfin 10.11 support, subtitle/multi-audio restoration, DVR
-  date fixes, and related upstream patches).
 
 ## Building and Releasing
 
